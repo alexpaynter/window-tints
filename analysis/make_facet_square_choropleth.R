@@ -24,34 +24,13 @@ dft_state_long <- dft_state %>%
     cols = -state,
     names_to = "part",
     values_to = "tint_pct"
-  )
-
-# Facetting didn't work with this package, so we repeat.
-gg_front <-
-  statebins(
-    dft_state,
-    value_col = "front", 
-    name = "Visible light transmission (%)",
-    ggplot2_scale_function = ggplot2::scale_fill_distiller,
-    palette = "Greys"
-  ) +
-  labs(title = "Front") +
-  theme_statebins() 
-
-gg_back <- 
-  statebins(
-    dft_state,
-    value_col = "side_rear", 
-    name = "Visible light transmission (%)",
-    ggplot2_scale_function = ggplot2::scale_fill_distiller,
-    palette = "Greys"
-  ) +
-  labs(title = "Side/Rear") +
-  theme_statebins() 
-
-
-gg_comb <- gg_front + gg_back & theme(legend.position = 'bottom')
-gg_comb <- gg_comb + plot_layout(guides = "collect")
+  ) %>%
+  mutate(
+    part_disp = case_when(
+      part %in% "front" ~ "Front",
+      part %in% "side_rear" ~ "Rear/Side"
+    )
+  ) 
 
 gg_tints <- 
   ggplot(
@@ -60,50 +39,44 @@ gg_tints <-
         fill = tint_pct)
   ) + 
   geom_statebins(
-    lbl_size = 3,
+    lbl_size = 2,
     radius = grid::unit(0, "pt")
   ) + 
   coord_equal() +
-  scale_fill_distiller(palette = "Greys") +
-  facet_wrap(vars(part), nrow = 1) +
-  theme_statebins()
-
+  scale_fill_distiller(
+    name = "Visible Light Transmission (%)", 
+    palette = "Greys",
+    guide = guide_legend(theme = theme(
+      legend.direction = "horizontal",
+      legend.title.position = "top",
+      legend.text.position = "bottom",
+      #legend.text = element_text(hjust = 0.5, vjust = 1, angle = 90)
+    ))
+  ) +
+  facet_wrap(vars(part_disp), nrow = 1) +
+  # theme_statebins()
+  theme_bw() +
+  theme(
+    axis.ticks = element_blank(),
+    axis.text = element_blank(),
+    panel.grid = element_blank(),
+    legend.position = "bottom"
+  )
+#  theme_statebins()
+  
 gg_tints
-  
-  
-  
-  
-  
-  
-  ggplot(flu, aes(state=statename, fill=activity_level)) +
-  geom_statebins(
-    lbl_size = 3,
-    radius = grid::unit(0, "pt")
-  ) +
-  coord_equal() +
-  viridis::scale_fill_viridis(
-    name = "ILI Activity Level  ", limits=c(0,10), breaks=0:10, option = "magma", direction = -1
-  ) +
-  facet_wrap(~weekend) +
-  theme_statebins() + 
-  labs(title="2017-18 Flu Season ILI Activity Level") +
-  theme(plot.title=element_text(size=16, hjust=0)) +
-  theme(plot.margin = margin(30,30,30,30))
 
-
-# gg_comb <- ggpubr::ggarrange(
-#   gg_front,
-#   gg_back,
-#   nrow = 1,
-#   common.legend = T,
-#   legend = "bottom"
-# )
 
 ggsave(
-  gg_comb,
+  gg_tints,
+  filename = here('output', 'gg_square_choro.svg'),
+  width = 8,
+  height = 4
+)
+ggsave(
+  gg_tints,
   filename = here('output', 'gg_square_choro.pdf'),
   width = 8,
   height = 4
 )
   
-)

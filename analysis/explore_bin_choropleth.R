@@ -33,11 +33,11 @@ flu <- ili_weekly_activity_indicators(2017)
 
 # Can't read this - too much text.  Just show me 5:
 flu <- flu |> 
-  filter(weekend %in% sample(unique(flu$weekend), 5))
+  filter(weekend %in% sample(unique(flu$weekend), 2))
 
 ggplot(flu, aes(state=statename, fill=activity_level)) +
   geom_statebins(
-    lbl_size = 0.5,
+    lbl_size = 3,
     radius = grid::unit(0, "pt")
   ) +
   coord_equal() +
@@ -45,7 +45,7 @@ ggplot(flu, aes(state=statename, fill=activity_level)) +
     name = "ILI Activity Level  ", limits=c(0,10), breaks=0:10, option = "magma", direction = -1
   ) +
   facet_wrap(~weekend) +
+  theme_statebins() + 
   labs(title="2017-18 Flu Season ILI Activity Level") +
-  theme_statebins(base_family = font_ps) +
   theme(plot.title=element_text(size=16, hjust=0)) +
   theme(plot.margin = margin(30,30,30,30))
