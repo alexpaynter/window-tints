@@ -5,6 +5,8 @@ library(statebins)
 library(hrbrthemes)
 library(tidyverse)
 library(patchwork)
+library(here)
+library(ggplot2)
 
 dft_state <- readr::read_rds(
   here('data', 'state_tint.rds')
@@ -39,21 +41,22 @@ gg_tints <-
         fill = tint_pct)
   ) + 
   geom_statebins(
-    lbl_size = 2,
+    lbl_size = 1.5,
     radius = grid::unit(0, "pt")
   ) + 
   coord_equal() +
   scale_fill_distiller(
     name = "Visible Light Transmission (%)", 
     palette = "Greys",
-    guide = guide_legend(theme = theme(
-      legend.direction = "horizontal",
-      legend.title.position = "top",
-      legend.text.position = "bottom",
-      #legend.text = element_text(hjust = 0.5, vjust = 1, angle = 90)
-    ))
+    guide = guide_legend(
+      title.position = "top",
+      label.position = "bottom", 
+      keywidth = grid::unit(0.3, "inch"),
+      keyheight = grid::unit(0.3/2.5, "inch")
+    )
+    #legend.text = element_text(hjust = 0.5, vjust = 1, angle = 90)
   ) +
-  facet_wrap(vars(part_disp), nrow = 1) +
+  facet_wrap(vars(part_disp), ncol = 1) +
   # theme_statebins()
   theme_bw() +
   theme(
@@ -70,13 +73,13 @@ gg_tints
 ggsave(
   gg_tints,
   filename = here('output', 'gg_square_choro.svg'),
-  width = 8,
-  height = 4
+  width = 3.5, 
+  height = 5
 )
+
 ggsave(
   gg_tints,
-  filename = here('output', 'gg_square_choro.pdf'),
-  width = 8,
-  height = 4
+  filename = here('..', 'ap-site', 'static', 'posts', 'window_tints_square_choro.svg'),
+  width = 3.5, 
+  height = 5
 )
-  
